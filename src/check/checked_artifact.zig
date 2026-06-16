@@ -17153,9 +17153,10 @@ const PlatformAppRelationTypeDigestBuilder = struct {
             self.writeBytes(self.names.methodNameText(constraint.fn_name));
             try self.writeSourceType(constraint.fn_ty);
             self.writeTag(@tagName(constraint.origin));
-            self.writeBool(constraint.binop_negated);
-            self.writeBool(constraint.num_literal != null);
-            if (constraint.num_literal) |num_literal| {
+            self.writeBool(constraint.origin.binopNegated());
+            const maybe_num_literal = constraint.numeralInfo();
+            self.writeBool(maybe_num_literal != null);
+            if (maybe_num_literal) |num_literal| {
                 self.hasher.update(&num_literal.bytes);
                 self.writeBool(num_literal.is_u128);
                 self.writeBool(num_literal.is_negative);
@@ -26477,8 +26478,8 @@ test "SERIALIZED_VERSION_HASH golden value" {
     // change, bump `serialized_layout_version` and replace the golden bytes below with
     // the ones this assertion prints.
     const golden: [32]u8 = .{
-        0xED, 0xBD, 0xE3, 0x9E, 0xCC, 0x7F, 0xEC, 0x25, 0xD2, 0xF5, 0xE6, 0x14, 0x8F, 0x19, 0x08, 0xC1,
-        0xD7, 0xFB, 0x10, 0xAC, 0xB5, 0xEB, 0x70, 0x3A, 0xB3, 0xD6, 0x41, 0x80, 0x31, 0x28, 0x0B, 0xA8,
+        0xCA, 0x66, 0x0F, 0x24, 0x8C, 0xC9, 0x01, 0x74, 0xD1, 0xFC, 0xD0, 0x02, 0xE3, 0x26, 0x52, 0xD4,
+        0x5E, 0xF2, 0x2D, 0xD4, 0x51, 0xBC, 0x87, 0x57, 0x6F, 0x0C, 0xC3, 0x32, 0x05, 0xC7, 0x28, 0xCB,
     };
     try std.testing.expectEqualSlices(u8, &golden, &CheckedModuleArtifact.SERIALIZED_VERSION_HASH);
 }
